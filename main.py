@@ -30,7 +30,7 @@ display_welcome_1 = my_font.render(welcome_1, True, (255, 255, 255))
 display_welcome_2 = my_font.render(welcome_2, True, (255, 255, 255))
 
 # The loop will carry on until the user exits the game (e.g. clicks the close button).
-run = True
+run_game = True
 start_screen= True
 # -------- Main Program Loop -----------
 while run:
@@ -69,15 +69,15 @@ while run:
 
 
         if event.type == pygame.QUIT:  # If user clicked close
-            run = False
+            run_game = False
 
     screen.fill((0, 0, 0))
     if game_not_started:
         screen.blit(display_welcome, (170, 150))
         screen.blit(display_welcome_1, (170, 190))
         screen.blit(display_welcome_2, (170, 190))
-    if run == True:
-
+    if run_game == True:
+        screen.fill((city_background))
 
     else:
         pygame.display.update()
