@@ -1,7 +1,9 @@
 import pygame
-from goomba import Goomba
+from character import Character
 from hammer import Hammer
 from vending import Vending
+import time
+
 
 # set up pygame modules
 pygame.init()
@@ -15,12 +17,13 @@ park = pygame.image.load("park.jpg")
 size = (400, 300)
 screen = pygame.display.set_mode(size)
 
-
-g=Goomba(200,250)
+c_start_x=200
+c=Character(c_start_x,250)
 h=Hammer(200,250)
 v=Vending(0,40)
 coins=0
 health=100
+hammer_health=100
 
 
 game_not_started = True
@@ -33,46 +36,57 @@ faster_repair = False
 welcome="Hi,welcome to my game!"
 welcome_1="Press the mouse to start the game and use wasd or the arrow keys to move your character!"
 welcome_2="Your objective here is to earn coins and use these coins to buy tools and help rebuild the city after a natural disaster."
+lose_message = "You lost due to broken hammer or no health!"
+
 
 # render the text for later
 display_welcome = my_font.render(welcome, True, (255, 255, 255))
 display_welcome_1 = my_font.render(welcome_1, True, (255, 255, 255))
 display_welcome_2 = my_font.render(welcome_2, True, (255, 255, 255))
+display_lose_message = my_font.render(lose_message, True, (255, 255, 255))
 
-# The loop will carry on until the user exits the game (e.g. clicks the close button).
 run_game = True
 start_screen= True
+fix=False
+lose=False
+
+# The loop will carry on until the user exits the game (e.g. clicks the close button).
 # -------- Main Program Loop -----------
 while run:
+    start_time=time.time()
+    current_time=time.time()-start_time
+
+
     keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_d]:
-        g.move_direction("right")
+        c.move_direction("right")
         h.move_direction("right")
     if keys[pygame.K_w]:
-        g.move_direction("up")
+        c.move_direction("up")
         h.move_direction("up")
     if keys[pygame.K_a]:
-        g.move_direction("left")
+        c.move_direction("left")
         h.move_direction("left")
     if keys[pygame.K_s]:
-        g.move_direction("down")
+        c.move_direction("down")
         h.move_direction("down")
 
     if keys[pygame.K_RIGHT]:
-        g.move_direction("right")
+        c.move_direction("right")
         h.move_direction("right")
     if keys[pygame.K_UP]:
-        g.move_direction("up")
+        c.move_direction("up")
         h.move_direction("up")
     if keys[pygame.K_LEFT]:
-        g.move_direction("left")
+        c.move_direction("left")
         h.move_direction("left")
     if keys[pygame.K_DOWN]:
-        g.move_direction("down")
+        c.move_direction("down")
         h.move_direction("down")
 
-    if g in pygame.Rect(100, 100, 10, 10):
-        g = 200, 0
+    if c_start_x < 0:
+        c_start_x = 600
+        c =(c_start_x, 250)
         background = store_background
 
 
@@ -85,6 +99,13 @@ while run:
         if faster_repair:
             coins=coins-5
 
+    if fix:
+        coins+=30
+        hammer_health-=20
+        health-=30
+
+    if health==0 or hammer_health==0:
+        lose=True
 
 
     # --- Main event loop
@@ -94,6 +115,7 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             game_not_started=False
+            run_game=True
         if event.type == pygame.MOUSEBUTTONUP:
             run = True
 
@@ -109,6 +131,12 @@ while run:
         screen.blit(display_welcome_2, (170, 190))
     if run_game == True:
         screen.fill((city_background))
+
+    if screen.fill((store_background)):
+        v = Vending(0, 40)
+
+    if lose==True:
+        screen.blit(display_lose_message, (170, 150))
 
     else:
         pygame.display.update()
