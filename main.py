@@ -11,7 +11,8 @@ pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 15)
 city_background = pygame.image.load("city.jpg")
 store_background = pygame.image.load("store.jpg")
-park = pygame.image.load("park.jpg")
+park_background = pygame.image.load("park.jpg")
+background=city_background
 
 # set up variables for the display
 size = (400, 300)
@@ -37,13 +38,16 @@ welcome="Hi,welcome to my game!"
 welcome_1="Press the mouse to start the game and use wasd or the arrow keys to move your character!"
 welcome_2="Your objective here is to earn coins and use these coins to buy tools and help rebuild the city after a natural disaster."
 lose_message = "You lost due to broken hammer or no health!"
-
+shop_message="What would you like to buy?"
+no_coins_message="You do not have enough coins to purchase this item."
 
 # render the text for later
 display_welcome = my_font.render(welcome, True, (255, 255, 255))
 display_welcome_1 = my_font.render(welcome_1, True, (255, 255, 255))
 display_welcome_2 = my_font.render(welcome_2, True, (255, 255, 255))
 display_lose_message = my_font.render(lose_message, True, (255, 255, 255))
+display_shop_message= my_font.render(shop_message, True, (255, 255, 255))
+display_no_coins_message= my_font.render(no_coins_message, True, (255, 255, 255))
 
 run_game = True
 start_screen= True
@@ -84,14 +88,28 @@ while run:
         c.move_direction("down")
         h.move_direction("down")
 
-    if c_start_x < 0:
-        c_start_x = 600
-        c =(c_start_x, 250)
-        background = store_background
+    if c_start_x <= 0:
+        c_start_x = 200
+        c = (c_start_x, 250)
+        if background==store_background:
+            background = store_background
+        if background == city_background:
+            background = park_background
+        if background==park_background:
+            background = store_background
+
+    if c_start_x >= 0:
+        c_start_x = 200
+        c = (c_start_x, 250)
+        if background == store_background:
+            background = park_background
+        if background == city_background:
+            background = city_background
+        if background == park_background:
+            background = city_background
 
 
     if display_shop==True:
-        print("What would you like to buy")
         if repair_hammer:
             coins=coins-15
         if restore_10_health:
@@ -99,7 +117,7 @@ while run:
         if faster_repair:
             coins=coins-5
 
-    if fix:
+    if fix==True:
         coins+=30
         hammer_health-=20
         health-=30
@@ -117,6 +135,20 @@ while run:
             game_not_started=False
             run_game=True
         if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            if v.rect.collidepoint(pos):
+                display_shop=True
+                repair_hammer = True
+                restore_10_health = True
+                faster_repair = True
+            else:
+                display_shop=False
+                repair_hammer = False
+                restore_10_health = False
+                faster_repair = False
+
+            if v.rect.collidepoint(pos):
+                fix = False
             run = True
 
 
@@ -130,9 +162,9 @@ while run:
         screen.blit(display_welcome_1, (170, 190))
         screen.blit(display_welcome_2, (170, 190))
     if run_game == True:
-        screen.fill((city_background))
+        screen.fill((background))
 
-    if screen.fill((store_background)):
+    if background==store_background:
         v = Vending(0, 40)
 
     if lose==True:
