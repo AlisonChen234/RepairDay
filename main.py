@@ -13,6 +13,11 @@ city_background = pygame.image.load("city.jpg")
 store_background = pygame.image.load("store.jpg")
 park_background = pygame.image.load("park.jpg")
 background=city_background
+width=10
+height=10
+surface = pygame.display.set_mode((width, height), 0, 32)
+swing_rect = pygame.draw.rect(surface, (0,0,0), (200, 418, 52, 188), 1)
+#pygame.draw.rect(surface, (0,0,255), (x,y,150,150), 0)
 
 # set up variables for the display
 size = (400, 300)
@@ -40,6 +45,7 @@ welcome_2="Your objective here is to earn coins and use these coins to buy tools
 lose_message = "You lost due to broken hammer or no health!"
 shop_message="What would you like to buy?"
 no_coins_message="You do not have enough coins to purchase this item."
+no_time_message ="You ran out of time"
 
 # render the text for later
 display_welcome = my_font.render(welcome, True, (255, 255, 255))
@@ -48,11 +54,13 @@ display_welcome_2 = my_font.render(welcome_2, True, (255, 255, 255))
 display_lose_message = my_font.render(lose_message, True, (255, 255, 255))
 display_shop_message= my_font.render(shop_message, True, (255, 255, 255))
 display_no_coins_message= my_font.render(no_coins_message, True, (255, 255, 255))
+display_no_time_message= my_font.render(no_time_message, True, (255, 255, 255))
 
 run_game = True
 start_screen= True
 fix=False
 lose=False
+no_time=False
 
 # The loop will carry on until the user exits the game (e.g. clicks the close button).
 # -------- Main Program Loop -----------
@@ -88,7 +96,7 @@ while run:
         c.move_direction("down")
         h.move_direction("down")
 
-    if c_start_x <= 0:
+    if c_start_x >= 400:
         c_start_x = 200
         c = (c_start_x, 250)
         if background==store_background:
@@ -98,7 +106,7 @@ while run:
         if background==park_background:
             background = store_background
 
-    if c_start_x >= 0:
+    if c_start_x <= 0:
         c_start_x = 200
         c = (c_start_x, 250)
         if background == store_background:
@@ -124,6 +132,9 @@ while run:
 
     if health==0 or hammer_health==0:
         lose=True
+
+    if current_time==200:
+        no_time=True
 
 
     # --- Main event loop
@@ -169,6 +180,9 @@ while run:
 
     if lose==True:
         screen.blit(display_lose_message, (170, 150))
+
+    if no_time==True:
+        screen.blit(display_no_time_message, (170, 150))
 
     else:
         pygame.display.update()
