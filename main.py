@@ -20,8 +20,8 @@ pygame.display.set_caption("City Rebuild Game")
 
 c_start_x = 200
 c = Character(c_start_x, 250)
-h = Hammer(200, 250)
-c.set_hammer(h)  # Link the hammer to the character
+h = Hammer(100, 250)
+c.set_hammer(h)
 v = Vending(0, 40)
 coins = 0
 health = 100
@@ -41,6 +41,10 @@ lose_message = "You lost due to a broken hammer or no health!"
 shop_message = "What would you like to buy?"
 no_coins_message = "You do not have enough coins to purchase this item."
 no_time_message = "You ran out of time"
+restore_health="Restore 10 health for 20 coins"
+restore_hammer="Restore 10 health on hammer for 20 coins"
+
+
 
 # Render the text for later
 display_welcome = my_font.render(welcome, True, (255, 255, 255))
@@ -50,6 +54,8 @@ display_lose_message = my_font.render(lose_message, True, (255, 255, 255))
 display_shop_message = my_font.render(shop_message, True, (255, 255, 255))
 display_no_coins_message = my_font.render(no_coins_message, True, (255, 255, 255))
 display_no_time_message = my_font.render(no_time_message, True, (255, 255, 255))
+display_restore_health = my_font.render(restore_health, True, (255, 255, 255))
+display_restore_hammer = my_font.render(restore_hammer, True, (255, 255, 255))
 
 run = True
 fix = False
@@ -57,23 +63,23 @@ lose = False
 no_time = False
 start_time = None
 
-def fade_in(screen, color, duration=300):
-    fade_surface = pygame.Surface(screen.get_size())
-    fade_surface.fill(color)
-    for i in range(0, 255):
-        fade_surface.set_alpha(i)
-        screen.blit(fade_surface, (0, 0))
-        pygame.display.flip()  # Update the entire display
-        pygame.time.delay(duration // 255)
+#def fade_in(screen, color, duration=300):
+    #fade_surface = pygame.Surface(screen.get_size())
+    #fade_surface.fill(color)
+    #for i in range(0, 255):
+        #fade_surface.set_alpha(i)
+        #screen.blit(fade_surface, (0, 0))
+        #pygame.display.flip()  # Update the entire display
+        #pygame.time.delay(duration // 255)
 
-def fade_out(screen, color, duration=300):
-    fade_surface = pygame.Surface(screen.get_size())
-    fade_surface.fill(color)
-    for i in range(255, 0, -1):
-        fade_surface.set_alpha(i)
-        screen.blit(fade_surface, (0, 0))
-        pygame.display.flip()  # Update the entire display
-        pygame.time.delay(duration // 255)
+#def fade_out(screen, color, duration=300):
+    #fade_surface = pygame.Surface(screen.get_size())
+    #fade_surface.fill(color)
+    #for i in range(255, 0, -1):
+        #fade_surface.set_alpha(i)
+        #screen.blit(fade_surface, (0, 0))
+        #pygame.display.flip()  # Update the entire display
+        #pygame.time.delay(duration // 255)
 
 # The loop will carry on until the user exits the game (e.g. clicks the close button).
 # -------- Main Program Loop -----------
@@ -85,36 +91,26 @@ while run:
     keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_d]:
         c.move_direction("right")
-    if keys[pygame.K_w]:
-        c.move_direction("up")
+    #if keys[pygame.K_w]:
+    #    c.move_direction("up")
     if keys[pygame.K_a]:
         c.move_direction("left")
-    if keys[pygame.K_s]:
-        c.move_direction("down")
+    #if keys[pygame.K_s]:
+    #    c.move_direction("down")
 
     if keys[pygame.K_RIGHT]:
         c.move_direction("right")
-    if keys[pygame.K_UP]:
-        c.move_direction("up")
+    #if keys[pygame.K_UP]:
+    #    c.move_direction("up")
     if keys[pygame.K_LEFT]:
         c.move_direction("left")
-    if keys[pygame.K_DOWN]:
-        c.move_direction("down")
+    #if keys[pygame.K_DOWN]:
+    #    c.move_direction("down")
 
-    # Check if the character exits the screen and switch backgrounds accordingly
-    if c.x >= 540:
-        fade_out(screen, (255, 255, 255), duration=150)
-        if background == store_background:
-            background = city_background
-        elif background == city_background:
-            background = park_background
-        elif background == park_background:
-            background = store_background
-        c.x = 0
-        fade_in(screen, (255, 255, 255), duration=150)
+
 
     if c.x <= 0:
-        fade_out(screen, (255, 255, 255), duration=150)
+        #fade_out(screen, (255, 255, 255), duration=150)
         if background == store_background:
             background = park_background
         elif background == city_background:
@@ -122,7 +118,18 @@ while run:
         elif background == park_background:
             background = city_background
         c.x = 540
-        fade_in(screen, (255, 255, 255), duration=150)
+        #fade_in(screen, (255, 255, 255), duration=150)
+
+    elif c.x >= 540:
+        #fade_out(screen, (255, 255, 255), duration=150)
+        if background == store_background:
+            background = city_background
+        elif background == city_background:
+            background = park_background
+        elif background == park_background:
+            background = store_background
+        c.x = 0
+        #fade_in(screen, (255, 255, 255), duration=150)
 
     if display_shop:
         if repair_hammer and coins >= 15:
@@ -154,13 +161,13 @@ while run:
             run_game = True
 
         if event.type == pygame.MOUSEBUTTONUP:
-            pos = pygame.mouse.get_pos()
-            if background == store_background and v.rect.collidepoint(pos):
+            mouse_pos = pygame.mouse.get_pos()
+            if background == store_background and v.rect.collidepoint(mouse_pos):
                 display_shop = True
             else:
                 display_shop = False
 
-            if background == store_background and v.rect.collidepoint(pos):
+            if background == store_background and v.rect.collidepoint(mouse_pos):
                 fix = True
 
     # Drawing the screen
@@ -171,9 +178,9 @@ while run:
         screen.blit(display_welcome_2, (10, 90))
     elif run_game:
         screen.blit(background, (0, 0))
-        c.draw(screen)  # Draw the character and the hammer together
+        c.draw(screen)
         if background == store_background:
-            v.draw(screen)  # Draw the vending machine only in the store background
+            v.draw(screen)
         if lose:
             screen.blit(display_lose_message, (10, 150))
         elif no_time:
