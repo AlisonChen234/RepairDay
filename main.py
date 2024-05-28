@@ -8,6 +8,7 @@ from vending import Vending
 pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 15)
+old_sheet_paper=pygame.image.load("old_piece_paper.jpg")
 city_background = pygame.image.load("city.jpg")
 store_background = pygame.image.load("store.jpg")
 park_background = pygame.image.load("park.jpg")
@@ -19,7 +20,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("City Rebuild Game")
 
 c_start_x = 200
-c = Character(c_start_x, 250)
+c = Character(c_start_x, 200)
 h = Hammer(100, 250)
 c.set_hammer(h)
 v = Vending(0, 40)
@@ -91,21 +92,21 @@ while run:
     keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_d]:
         c.move_direction("right")
-    #if keys[pygame.K_w]:
-    #    c.move_direction("up")
+    if keys[pygame.K_w]:
+        c.move_direction("up")
     if keys[pygame.K_a]:
         c.move_direction("left")
-    #if keys[pygame.K_s]:
-    #    c.move_direction("down")
+    if keys[pygame.K_s]:
+        c.move_direction("down")
 
     if keys[pygame.K_RIGHT]:
         c.move_direction("right")
-    #if keys[pygame.K_UP]:
-    #    c.move_direction("up")
+    if keys[pygame.K_UP]:
+        c.move_direction("up")
     if keys[pygame.K_LEFT]:
         c.move_direction("left")
-    #if keys[pygame.K_DOWN]:
-    #    c.move_direction("down")
+    if keys[pygame.K_DOWN]:
+        c.move_direction("down")
 
 
 
@@ -172,7 +173,7 @@ while run:
 
     # Drawing the screen
     if game_not_started:
-        screen.fill((0, 0, 0))
+        screen.fill((100, 200, 40))
         screen.blit(display_welcome, (10, 50))
         screen.blit(display_welcome_1, (10, 70))
         screen.blit(display_welcome_2, (10, 90))
@@ -181,10 +182,15 @@ while run:
         c.draw(screen)
         if background == store_background:
             v.draw(screen)
+        if display_shop:
+            screen.blit(old_sheet_paper, (200, 20))
+            screen.blit(display_restore_health, (200, 150))
+            screen.blit(display_restore_hammer, (200, 180))
+
         if lose:
             screen.blit(display_lose_message, (10, 150))
         elif no_time:
-            screen.blit(display_no_time_message)
+            screen.blit(display_no_time_message, (10, 120))
             screen.blit(display_no_time_message, (10, 150))
 
     pygame.display.update()
