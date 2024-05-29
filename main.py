@@ -3,12 +3,14 @@ import time
 from character import Character
 from hammer import Hammer
 from vending import Vending
+import random
 
 # Set up pygame modules
 pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 15)
-old_sheet_paper=pygame.image.load("old_piece_paper.jpg")
+old_sheet_paper = pygame.image.load("old_piece_paper.jpg")
+rubble = pygame.image.load("rubble..png")
 city_background = pygame.image.load("city.jpg")
 store_background = pygame.image.load("store.jpg")
 park_background = pygame.image.load("park.jpg")
@@ -18,6 +20,8 @@ background = city_background
 size = (540, 350)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("City Rebuild Game")
+rubble_place = random.randint(1,3)
+
 
 c_start_x = 200
 c = Character(c_start_x, 200)
@@ -44,8 +48,8 @@ no_coins_message = "You do not have enough coins to purchase this item."
 no_time_message = "You ran out of time"
 restore_health="Restore 10 health for 20 coins"
 restore_hammer="Restore 10 health on hammer for 20 coins"
-
-
+health_left="Health:", health
+hammer_health_left="Hammer Health:", hammer_health
 
 # Render the text for later
 display_welcome = my_font.render(welcome, True, (255, 255, 255))
@@ -57,12 +61,17 @@ display_no_coins_message = my_font.render(no_coins_message, True, (255, 255, 255
 display_no_time_message = my_font.render(no_time_message, True, (255, 255, 255))
 display_restore_health = my_font.render(restore_health, True, (255, 255, 255))
 display_restore_hammer = my_font.render(restore_hammer, True, (255, 255, 255))
+display_health_left= my_font.render(str(health_left), True, (255, 255, 255))
+display_hammer_health_left= my_font.render(str(hammer_health_left), True, (255, 255, 255))
+
 
 run = True
 fix = False
 lose = False
 no_time = False
 start_time = None
+restore_health = False
+restore_hammer = False
 
 #def fade_in(screen, color, duration=300):
     #fade_surface = pygame.Surface(screen.get_size())
@@ -160,6 +169,12 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             game_not_started = False
             run_game = True
+            x, y = pygame.mouse.get_pos()
+            if coins >= 20:
+                if x < 200 and y < 150:
+                    restore_hammer = True
+                if x < 200 and y < 150:
+                    restore_health = True
 
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_pos = pygame.mouse.get_pos()
@@ -167,9 +182,8 @@ while run:
                 display_shop = True
             else:
                 display_shop = False
-
-            if background == store_background and v.rect.collidepoint(mouse_pos):
-                fix = True
+            #if rubble.collidepoint(mouse_pos):
+                #fix = True
 
     # Drawing the screen
     if game_not_started:
@@ -180,7 +194,16 @@ while run:
     elif run_game:
         screen.blit(background, (0, 0))
         c.draw(screen)
+        screen.blit(display_health_left, (0, 10))
+        screen.blit(display_hammer_health_left, (0, 30))
+        if rubble_place==1:
+            screen.blit(rubble, (100, 50))
+        if background==park_background:
+            if rubble_place == 2:
+                screen.blit(rubble, (100, 50))
         if background == store_background:
+            if rubble_place==3:
+                screen.blit(rubble, (100, 50))
             v.draw(screen)
         if display_shop:
             screen.blit(old_sheet_paper, (200, 20))
