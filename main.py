@@ -3,6 +3,8 @@ import time
 from character import Character
 from hammer import Hammer
 from vending import Vending
+#from wave import Wave
+from rubble import Rubble
 import random
 
 # Set up pygame modules
@@ -10,11 +12,11 @@ pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 15)
 old_sheet_paper = pygame.image.load("old_piece_paper.jpg")
-rubble = pygame.image.load("rubble..png")
 city_background = pygame.image.load("city.jpg")
 store_background = pygame.image.load("store.jpg")
 park_background = pygame.image.load("park.jpg")
 background = city_background
+#wave = pygame.image.load("wave.png")
 
 # Set up variables for the display
 size = (540, 350)
@@ -24,11 +26,15 @@ rubble_place = random.randint(1,3)
 
 
 c_start_x = 200
+#wave_start_x=550
+rubble_x=0
 c = Character(c_start_x, 200)
 h = Hammer(100, 250)
 c.set_hammer(h)
 v = Vending(0, 40)
-coins = 0
+#w = Wave(wave_start_x, 70)
+rubble= Rubble(rubble_x, 50)
+coins = 100
 health = 100
 hammer_health = 100
 
@@ -117,7 +123,8 @@ while run:
     if keys[pygame.K_DOWN]:
         c.move_direction("down")
 
-
+    #while wave_start_x > -500:
+        #w = Wave(wave_start_x-1, 70)
 
     if c.x <= 0:
         #fade_out(screen, (255, 255, 255), duration=150)
@@ -153,6 +160,13 @@ while run:
         coins += 30
         hammer_health -= 20
         health -= 30
+        rubble_place = random.randint(1, 3)
+
+        for i in range(10):
+            for i in range(10):
+                c.move_direction("up")
+            for i in range(10):
+                c.move_direction("down")
         fix = False
 
     if health <= 0 or hammer_health <= 0:
@@ -178,6 +192,8 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_pos = pygame.mouse.get_pos()
+            if rubble.rect.collidepoint(mouse_pos):
+                fix = True
             if background == store_background and v.rect.collidepoint(mouse_pos):
                 display_shop = True
             else:
@@ -197,13 +213,13 @@ while run:
         screen.blit(display_health_left, (0, 10))
         screen.blit(display_hammer_health_left, (0, 30))
         if rubble_place==1:
-            screen.blit(rubble, (100, 50))
+            rubble.draw(screen)
         if background==park_background:
             if rubble_place == 2:
-                screen.blit(rubble, (100, 50))
+                rubble.draw(screen)
         if background == store_background:
             if rubble_place==3:
-                screen.blit(rubble, (100, 50))
+                rubble.draw(screen)
             v.draw(screen)
         if display_shop:
             screen.blit(old_sheet_paper, (200, 20))
