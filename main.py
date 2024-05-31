@@ -3,7 +3,7 @@ import time
 from character import Character
 from hammer import Hammer
 from vending import Vending
-#from wave import Wave
+from wave import Wave
 from rubble import Rubble
 import random
 
@@ -26,14 +26,16 @@ rubble_place = random.randint(1,3)
 
 
 c_start_x = 200
-#wave_start_x=550
+c_start_y=200
+wave_start_x=550
 rubble_x=0
-c = Character(c_start_x, 200)
+rubble_y=50
+c = Character(c_start_x, c_start_y)
 h = Hammer(100, 250)
 c.set_hammer(h)
 v = Vending(0, 40)
-#w = Wave(wave_start_x, 70)
-rubble= Rubble(rubble_x, 50)
+w = Wave(wave_start_x, 70)
+rubble= Rubble(rubble_x, rubble_y)
 coins = 100
 health = 100
 hammer_health = 100
@@ -126,7 +128,7 @@ while run:
     #while wave_start_x > -500:
         #w = Wave(wave_start_x-1, 70)
 
-    if c.x <= 0:
+    if c.x <= -120:
         #fade_out(screen, (255, 255, 255), duration=150)
         if background == store_background:
             background = park_background
@@ -160,7 +162,8 @@ while run:
         coins += 30
         hammer_health -= 20
         health -= 30
-        rubble_place = random.randint(1, 3)
+        c = Character(rubble_x, rubble_y+175)
+        fix=False
 
         for i in range(10):
             for i in range(10):
@@ -184,22 +187,30 @@ while run:
             game_not_started = False
             run_game = True
             x, y = pygame.mouse.get_pos()
-            if coins >= 20:
-                if x < 200 and y < 150:
-                    restore_hammer = True
-                if x < 200 and y < 150:
-                    restore_health = True
+            if background == store_background and display_shop:
+                if coins >= 20:
+                    if x < 200 and y < 150:
+                        restore_hammer = True
+                    if x < 200 and y < 150:
+                        restore_health = True
 
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_pos = pygame.mouse.get_pos()
             if rubble.rect.collidepoint(mouse_pos):
                 fix = True
+                rubble_place = random.randint(1, 3)
             if background == store_background and v.rect.collidepoint(mouse_pos):
                 display_shop = True
             else:
                 display_shop = False
             #if rubble.collidepoint(mouse_pos):
                 #fix = True
+    health_left = "Health:", health
+    hammer_health_left = "Hammer Health:", hammer_health
+
+    display_health_left = my_font.render(str(health_left), True, (255, 255, 255))
+    display_hammer_health_left = my_font.render(str(hammer_health_left), True, (255, 255, 255))
+
 
     # Drawing the screen
     if game_not_started:
@@ -213,13 +224,19 @@ while run:
         screen.blit(display_health_left, (0, 10))
         screen.blit(display_hammer_health_left, (0, 30))
         if rubble_place==1:
+            rubble_x=200
+            rubble_y=75
+            rubble = Rubble(rubble_x, rubble_y)
             rubble.draw(screen)
+            w.draw(screen)
         if background==park_background:
             if rubble_place == 2:
                 rubble.draw(screen)
+                w.draw(screen)
         if background == store_background:
             if rubble_place==3:
                 rubble.draw(screen)
+                w.draw(screen)
             v.draw(screen)
         if display_shop:
             screen.blit(old_sheet_paper, (200, 20))

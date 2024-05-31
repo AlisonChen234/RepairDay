@@ -20,7 +20,7 @@ class Character:
     def update_hammer_position(self):
         if self.hammer:
             # Position the hammer relative to the character
-            self.hammer.x = self.x + self.image_size[0] - 10  # Adjust as necessary
+            self.hammer.x = self.x + self.image_size[0] +10 # Adjust as necessary
             self.hammer.y = self.y + self.image_size[1] // 2
 
     def set_location(self, new_x, new_y):
