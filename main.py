@@ -69,10 +69,12 @@ display_restore_hammer = my_font.render(restore_hammer_message, True, (255, 255,
 display_health_left = my_font.render(str(health_left), True, (255, 255, 255))
 display_hammer_health_left = my_font.render(str(hammer_health_left), True, (255, 255, 255))
 
-start_time = None
+start_time = 0
 fix = False
 lose = False
 no_time = False
+restore_health=False
+restore_hammer=False
 
 def fade_in(screen, color, duration=300):
     fade_surface = pygame.Surface(screen.get_size())
@@ -210,13 +212,19 @@ while True:
             else:
                 restore_hammer = False
 
+        if c.x+247==w.x:
+            health-=20
+
     health_left = "Health:", health
     hammer_health_left = "Hammer Health:", hammer_health
 
     display_health_left = my_font.render(str(health_left), True, (255, 255, 255))
     display_hammer_health_left = my_font.render(str(hammer_health_left), True, (255, 255, 255))
 
-    # Drawing the screen
+    if health==0:
+        lose=True
+
+#
     if game_not_started:
         screen.fill((100, 200, 40))
         screen.blit(display_welcome, (10, 50))
