@@ -164,13 +164,11 @@ while True:
         lose = True
 
 
-    # Move the wave towards the left
     if run_game:
         w.move()
 
-        # Check if the wave goes off the screen
-        if w.x < -100:
-            w.x = 550  # Reset the wave position when it goes off the screen
+        if w.x < -250:
+            w.x = 550
 
     # --- Main event loop
     for event in pygame.event.get():  # User did something
@@ -232,13 +230,17 @@ while True:
 
         if background == park_background:
             if rubble_place == 2:
-                rubble.draw(screen)
-                w.draw(screen)
+                if w.x > -250:
+                    w.draw(screen)
+                if w.x < -250:
+                    rubble.draw(screen)
 
         if background == store_background:
             if rubble_place == 3:
-                rubble.draw(screen)
-                w.draw(screen)
+                if w.x > -250:
+                    w.draw(screen)
+                if w.x < -250:
+                    rubble.draw(screen)
             v.draw(screen)
             box_1.draw(screen)
             box_2.draw(screen)
@@ -247,8 +249,10 @@ while True:
             rubble_x = 200
             rubble_y = 75
             rubble = Rubble(rubble_x, rubble_y)
-            rubble.draw(screen)
-            w.draw(screen)
+            if w.x > -250:
+                w.draw(screen)
+            if w.x < -250:
+                rubble.draw(screen)
 
         if display_shop:
             screen.blit(old_sheet_paper, (200, 20))
