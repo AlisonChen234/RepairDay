@@ -1,5 +1,4 @@
 import pygame
-import time
 from character import Character
 from hammer import Hammer
 from vending import Vending
@@ -17,28 +16,26 @@ city_background = pygame.image.load("city.jpg")
 store_background = pygame.image.load("store.jpg")
 park_background = pygame.image.load("park.jpg")
 background = city_background
-#wave = pygame.image.load("wave.png")
 
 # Set up variables for the display
 size = (540, 350)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("City Rebuild Game")
-rubble_place = random.randint(1,3)
-
+rubble_place = 1
 
 c_start_x = 200
-c_start_y=200
-wave_start_x=550
-rubble_x=0
-rubble_y=50
-box_1=Box(200,150)
-box_2=Box(200,180)
+c_start_y = 225
+wave_start_x = 550
+rubble_x = 0
+rubble_y = 50
+box_1 = Box(200, 150)
+box_2 = Box(200, 180)
 c = Character(c_start_x, c_start_y)
 h = Hammer(100, 250)
 c.set_hammer(h)
-v = Vending(0, 40)
-w = Wave(wave_start_x, 70)
-rubble= Rubble(rubble_x, rubble_y)
+v = Vending(-60, 120)
+w = Wave(wave_start_x, 40)
+rubble = Rubble(rubble_x, rubble_y)
 coins = 100
 health = 100
 hammer_health = 100
@@ -46,9 +43,6 @@ hammer_health = 100
 game_not_started = True
 run_game = False
 display_shop = False
-repair_hammer = False
-restore_10_health = False
-faster_repair = False
 
 welcome = "Hi, welcome to my game!"
 welcome_1 = "Press the mouse to start the game and use WASD or the arrow keys to move your character!"
@@ -57,10 +51,10 @@ lose_message = "You lost due to a broken hammer or no health!"
 shop_message = "What would you like to buy?"
 no_coins_message = "You do not have enough coins to purchase this item."
 no_time_message = "You ran out of time"
-restore_health="Restore 10 health for 20 coins"
-restore_hammer="Restore 10 health on hammer for 20 coins"
-health_left="Health:", health
-hammer_health_left="Hammer Health:", hammer_health
+restore_health_message = "Restore 10 health for 20 coins"
+restore_hammer_message = "Restore 10 health on hammer for 20 coins"
+health_left = "Health:", health
+hammer_health_left = "Hammer Health:", hammer_health
 
 # Render the text for later
 display_welcome = my_font.render(welcome, True, (255, 255, 255))
@@ -70,19 +64,15 @@ display_lose_message = my_font.render(lose_message, True, (255, 255, 255))
 display_shop_message = my_font.render(shop_message, True, (255, 255, 255))
 display_no_coins_message = my_font.render(no_coins_message, True, (255, 255, 255))
 display_no_time_message = my_font.render(no_time_message, True, (255, 255, 255))
-display_restore_health = my_font.render(restore_health, True, (255, 255, 255))
-display_restore_hammer = my_font.render(restore_hammer, True, (255, 255, 255))
-display_health_left= my_font.render(str(health_left), True, (255, 255, 255))
-display_hammer_health_left= my_font.render(str(hammer_health_left), True, (255, 255, 255))
+display_restore_health = my_font.render(restore_health_message, True, (255, 255, 255))
+display_restore_hammer = my_font.render(restore_hammer_message, True, (255, 255, 255))
+display_health_left = my_font.render(str(health_left), True, (255, 255, 255))
+display_hammer_health_left = my_font.render(str(hammer_health_left), True, (255, 255, 255))
 
-
-run = True
+start_time = None
 fix = False
 lose = False
 no_time = False
-start_time = None
-restore_health = False
-restore_hammer = False
 
 def fade_in(screen, color, duration=300):
     fade_surface = pygame.Surface(screen.get_size())
@@ -102,12 +92,8 @@ def fade_out(screen, color, duration=300):
         pygame.display.flip()
         pygame.time.delay(duration // 255)
 
-# The loop will carry on until the user exits the game (e.g. clicks the close button).
 # -------- Main Program Loop -----------
-while run:
-    if start_time is None:
-        start_time = time.time()
-    current_time = time.time() - start_time
+while True:
 
     keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_d]:
@@ -127,9 +113,6 @@ while run:
         c.move_direction("left")
     if keys[pygame.K_DOWN]:
         c.move_direction("down")
-
-    #while wave_start_x > -500:
-        #w = Wave(wave_start_x-1, 70)
 
     if c.x <= -120:
         fade_out(screen, (255, 255, 255), duration=150)
@@ -154,40 +137,46 @@ while run:
         fade_in(screen, (255, 255, 255), duration=150)
 
     if display_shop:
-        if repair_hammer and coins >= 15:
-            coins -= 15
+        if restore_hammer and coins >= 20:
+            coins -= 20
             hammer_health = 100
-        if restore_10_health and coins >= 20:
+        if restore_health and coins >= 20:
             coins -= 20
             health += 10
 
     if not rubble.draw(screen):
-        fix=False
+        fix = False
 
     if fix:
         coins += 30
         hammer_health -= 20
         health -= 30
-        c = Character(rubble_x, rubble_y+175)
-        fix=False
-
-        for i in range(10):
-            for i in range(10):
-                c.move_direction("up")
-            for i in range(10):
-                c.move_direction("down")
+        c = Character(rubble_x, rubble_y + 175)
         fix = False
+
+        for _ in range(10):
+            for _ in range(10):
+                c.move_direction("up")
+            for _ in range(10):
+                c.move_direction("down")
 
     if health <= 0 or hammer_health <= 0:
         lose = True
 
-    if current_time >= 200:
-        no_time = True
+
+    # Move the wave towards the left
+    if run_game:
+        w.move()
+
+        # Check if the wave goes off the screen
+        if w.x < -100:
+            w.x = 550  # Reset the wave position when it goes off the screen
 
     # --- Main event loop
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
-            run = False
+            pygame.quit()
+            quit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             game_not_started = False
@@ -204,30 +193,30 @@ while run:
             mouse_pos = pygame.mouse.get_pos()
             if rubble.rect.collidepoint(mouse_pos):
                 fix = True
-            elif not rubble.rect.collidepoint(mouse_pos):
-                fix=False
+            else:
+                fix = False
             if fix:
                 rubble_place = random.randint(1, 3)
             if background == store_background and v.rect.collidepoint(mouse_pos):
                 display_shop = True
             else:
                 display_shop = False
+
             if background == store_background and box_1.rect.collidepoint(mouse_pos):
-                restore_health=True
+                restore_health = True
             else:
-                restore_health=False
+                restore_health = False
+
             if background == store_background and box_2.rect.collidepoint(mouse_pos):
                 restore_hammer = True
             else:
                 restore_hammer = False
-            #if rubble.collidepoint(mouse_pos):
-                #fix = True
+
     health_left = "Health:", health
     hammer_health_left = "Hammer Health:", hammer_health
 
     display_health_left = my_font.render(str(health_left), True, (255, 255, 255))
     display_hammer_health_left = my_font.render(str(hammer_health_left), True, (255, 255, 255))
-
 
     # Drawing the screen
     if game_not_started:
@@ -240,24 +229,27 @@ while run:
         c.draw(screen)
         screen.blit(display_health_left, (0, 10))
         screen.blit(display_hammer_health_left, (0, 30))
-        if rubble_place==1:
-            rubble_x=200
-            rubble_y=75
-            rubble = Rubble(rubble_x, rubble_y)
-            rubble.draw(screen)
-            w.draw(screen)
-            print("Hi")
-        if background==park_background:
+
+        if background == park_background:
             if rubble_place == 2:
                 rubble.draw(screen)
                 w.draw(screen)
+
         if background == store_background:
-            if rubble_place==3:
+            if rubble_place == 3:
                 rubble.draw(screen)
                 w.draw(screen)
             v.draw(screen)
             box_1.draw(screen)
-            box_1.draw(screen)
+            box_2.draw(screen)
+
+        if rubble_place == 1:
+            rubble_x = 200
+            rubble_y = 75
+            rubble = Rubble(rubble_x, rubble_y)
+            rubble.draw(screen)
+            w.draw(screen)
+
         if display_shop:
             screen.blit(old_sheet_paper, (200, 20))
             screen.blit(display_restore_health, (200, 150))
@@ -271,6 +263,3 @@ while run:
 
     pygame.display.update()
     pygame.time.Clock().tick(60)
-
-# Once we have exited the main program loop we can stop the game engine:
-pygame.quit()
