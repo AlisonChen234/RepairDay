@@ -5,7 +5,7 @@ from vending import Vending
 from wave import Wave
 from rubble import Rubble
 from box import Box
-import random
+#import random
 
 # Set up pygame modules
 pygame.init()
@@ -42,6 +42,8 @@ hammer_health = 100
 game_not_started = True
 run_game = False
 display_shop = False
+blit_rubble=False
+dont_blit_rubble=False
 
 welcome = "Hi, welcome to my game!"
 welcome_1 = "Press the mouse to start the game and use WASD or the arrow keys to move your character!"
@@ -151,14 +153,17 @@ while True:
             coins -= 20
             health += 10
 
-    if not screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y)):
+    if blit_rubble==False:
         fix = False
+
 
     if fix:
         coins += 30
         hammer_health -= 20
         health -= 30
         c = Character(rubble_x-40, rubble_y + 30)
+        dont_blit_rubble=True
+        w.x=550
         fix = False
 
         for _ in range(10):
@@ -171,10 +176,18 @@ while True:
         lose = True
 
     if run_game:
-        w.move()
+        #w.move()
 
         if w.x < -250:
             wave_left = True
+            blit_rubble = True
+
+        else:
+            wave_left = False
+
+        if w.x >= -250:
+            w.move()
+            screen.blit(w.image, (w.rect.x, w.rect.y))
 
         #if wave_left:
             # if background == city_background:
@@ -193,7 +206,7 @@ while True:
 
         # if w.x < -550:
         # w.x = 550
-        # wave_left = False  # Reset the flag indicating wave has left
+        # wave_left = False
 
     # --- Main event loop
     for event in pygame.event.get():  # User did something
@@ -219,10 +232,11 @@ while True:
 
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_pos = pygame.mouse.get_pos()
-            if not screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y)):
+            if blit_rubble==False:
                 fix = False
-            elif rubble.rect.collidepoint(mouse_pos):
+            elif rubble.rect.collidepoint(mouse_pos) and blit_rubble==True:
                 fix = True
+                dont_blit_rubble=True
             if background == store_background and v.rect.collidepoint(mouse_pos):
                 display_shop = True
             else:
@@ -273,10 +287,14 @@ while True:
                 if w.x > -250:
                     screen.blit(w.image, (w.rect.x, w.rect.y))
                 if wave_left:
-                    screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y))
-                    rubble_place = 0
+                    if blit_rubble==True:
+                        screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y))
+                        rubble_place = 0
+                    if dont_blit_rubble == True:
+                        screen.blit(rubble.image, (rubble.rect.x+10000, rubble.rect.y+1000000))
                 if fix==True:
                     screen.blit(background, (0, 0))
+                    w.x=550
 
         if background == park_background:
             rubble_place = 2
@@ -284,8 +302,11 @@ while True:
                 if w.x > -250:
                     screen.blit(w.image, (w.rect.x, w.rect.y))
                 if wave_left:
-                    screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y))
-                    rubble_place = 0
+                    if blit_rubble==True:
+                        screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y))
+                        rubble_place = 0
+                    if dont_blit_rubble==True:
+                        screen.blit(rubble.image, (rubble.rect.x+10000, rubble.rect.y+1000000))
                 if fix==True:
                     screen.blit(background, (0, 0))
 
@@ -295,8 +316,11 @@ while True:
                 if w.x > -250:
                     screen.blit(w.image, (w.rect.x, w.rect.y))
                 if wave_left:
-                    screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y))
-                    rubble_place = 0
+                    if blit_rubble==True:
+                        screen.blit(rubble.image, (rubble.rect.x, rubble.rect.y))
+                        rubble_place = 0
+                    if dont_blit_rubble == True:
+                        screen.blit(rubble.image, (rubble.rect.x+10000, rubble.rect.y+1000000))
                 if fix==True:
                     screen.blit(background, (0, 0))
             screen.blit(v.image, (v.rect.x, v.rect.y))
