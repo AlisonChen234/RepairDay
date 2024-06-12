@@ -5,6 +5,7 @@ from vending import Vending
 from wave import Wave
 from rubble import Rubble
 from box import Box
+import time
 #import random
 
 # Set up pygame modules
@@ -25,13 +26,15 @@ rubble_place = 0
 
 c_start_x = 200
 c_start_y = 225
+hammer_x=c_start_x+80
+hammer_y=c_start_y+15
 wave_start_x = 550
 rubble_x = 0
 rubble_y = 225
 box_1 = Box(200, 150)
 box_2 = Box(200, 180)
 c = Character(c_start_x, c_start_y)
-h = Hammer(100, 250)
+h = Hammer(hammer_x, hammer_y)
 v = Vending(-60, 120)
 w = Wave(wave_start_x, 40)
 rubble = Rubble(rubble_x, rubble_y)
@@ -105,21 +108,29 @@ while True:
     keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_d]:
         c.move_direction("right")
+        h.move_direction("right")
     if keys[pygame.K_w]:
         c.move_direction("up")
+        h.move_direction("up")
     if keys[pygame.K_a]:
         c.move_direction("left")
+        h.move_direction("left")
     if keys[pygame.K_s]:
         c.move_direction("down")
+        h.move_direction("down")
 
     if keys[pygame.K_RIGHT]:
         c.move_direction("right")
+        h.move_direction("right")
     if keys[pygame.K_UP]:
         c.move_direction("up")
+        h.move_direction("up")
     if keys[pygame.K_LEFT]:
         c.move_direction("left")
+        h.move_direction("left")
     if keys[pygame.K_DOWN]:
         c.move_direction("down")
+        h.move_direction("down")
 
     if c.x <= -120:
         fade_out(screen, (255, 255, 255), duration=150)
@@ -130,6 +141,7 @@ while True:
         elif background == park_background:
             background = city_background
         c.x = 540
+        h.x= c.x+80
         fade_in(screen, (255, 255, 255), duration=150)
 
 
@@ -144,6 +156,7 @@ while True:
         elif background == park_background:
             background = store_background
         c.x = 0
+        h.x=c.x+80
         fade_in(screen, (255, 255, 255), duration=150)
 
     if display_shop:
@@ -161,16 +174,23 @@ while True:
         coins += 30
         hammer_health -= 20
         health -= 30
-        c = Character(rubble_x-40, rubble_y + 30)
+        c = Character(rubble_x-140, rubble_y + 30)
+        h = Hammer(rubble_x-40, rubble_y+30)
         dont_blit_rubble=True
         w.x=550
         fix = False
 
         for _ in range(10):
-            for _ in range(10):
-                c.move_direction("up")
-            for _ in range(10):
-                c.move_direction("down")
+            c.y -= 1
+            screen.blit(c.image, (c.rect.x, c.rect.y))
+            pygame.display.update()
+            pygame.time.delay(100)
+
+        for _ in range(10):
+            c.y += 1
+            screen.blit(c.image, (c.rect.x, c.rect.y))
+            pygame.display.update()
+            pygame.time.delay(100)
 
     if health <= 0 or hammer_health <= 0:
         lose = True
@@ -184,6 +204,7 @@ while True:
 
         else:
             wave_left = False
+            blit_rubble = False
 
         if w.x >= -250:
             w.move()
@@ -260,9 +281,12 @@ while True:
 
     health_left = "Health:", health
     hammer_health_left = "Hammer Health:", hammer_health
+    coins_left = "Coins:", coins
+
 
     display_health_left = my_font.render(str(health_left), True, (255, 255, 255))
     display_hammer_health_left = my_font.render(str(hammer_health_left), True, (255, 255, 255))
+    display_coins_left = my_font.render(str(coins_left), True, (255, 255, 255))
 
     if health == 0:
         lose = True
@@ -275,8 +299,10 @@ while True:
     elif run_game:
         screen.blit(background, (0, 0))
         screen.blit(c.image, (c.rect.x, c.rect.y))
+        screen.blit(h.image, (h.rect.x, h.rect.y))
         screen.blit(display_health_left, (0, 10))
         screen.blit(display_hammer_health_left, (0, 30))
+        screen.blit(display_coins_left, (0, 50))
 
         if background == city_background:
             rubble_place = 1
