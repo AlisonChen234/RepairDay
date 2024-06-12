@@ -41,7 +41,3 @@ class Character:
         self.rect = pygame.Rect(self.x, self.y, self.image_size[0], self.image_size[1])
         self.update_hammer_position()
 
-    def draw(self, screen):
-        screen.blit(self.image, (self.x, self.y))
-        if self.hammer:
-            self.hammer.draw(screen)

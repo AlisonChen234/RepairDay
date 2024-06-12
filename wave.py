@@ -24,5 +24,3 @@ class Wave:
         self.x -= 2
         self.update_rect()
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
