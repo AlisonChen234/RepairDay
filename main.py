@@ -238,7 +238,6 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             game_not_started = False
             run_game = True
-            x, y = pygame.mouse.get_pos()
             mouse_pos=pygame.mouse.get_pos()
 
             if background == store_background and box_1.rect.collidepoint(mouse_pos):
