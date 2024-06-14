@@ -10,7 +10,7 @@ class Hammer:
         self.image = pygame.transform.scale(self.image, scale_size)
         self.image_size = self.image.get_size()
         self.rect = pygame.Rect(self.x, self.y, self.image_size[0], self.image_size[1])
-        self.delta = 0.4
+        self.delta = 4
 
     def set_location(self, new_x, new_y):
         self.x = new_x
